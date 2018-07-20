@@ -1,0 +1,167 @@
+<style>
+rampt-img{
+	display: block;
+	width: 100%;
+} 
+.i-rampthtml-layout-size-defined {
+	overflow: hidden!important;
+}
+.i-rampthtml-layout-container, .i-rampthtml-layout-fixed-height, .i-rampthtml-layout-responsive, .i-rampthtml-layout-fixed{
+	display: block;
+	position: relative;
+}
+i-rampthtml-sizer {
+    display: block!important;
+}
+.i-rampthtml-fill-content {
+    position: absolute;
+    display: block;
+    height: 0;
+    max-height: 100%;
+    max-width: 100%;
+    min-height: 100%;
+    min-width: 100%;
+    width: 0;
+    margin: auto;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+.i-rampthtml-replaced-content, .i-rampthtml-screen-reader {
+    padding: 0!important;
+    border: none!important;
+}
+</style>
+<script>
+/* RAMPT */
+if(window.IntersectionObserver)
+{
+	var rampt_observer = new IntersectionObserver(function(entries) {
+			entries.forEach(function (entry) {
+                    		if (entry.intersectionRatio > 0) {
+                        		rampt_observer.unobserve(entry.target);
+					load_rampt_img(entry.target);
+				}
+			});
+		},
+		{
+			root: null,
+                	rootMargin: "0px",
+                	threshold: [0, 0.2, 0.4, 0.6, 0.8, 1]
+		}
+	);
+}
+/* setup_rampt_imgs prepares all rampt-img tags
+   It resizes them so they are ready to load the images
+*/
+function setup_rampt_imgs()
+{
+	if(document.querySelectorAll("#rampt_img_style").length == 0)
+	{
+		var rampt_img_style = document.createElement("style");
+		rampt_img_style.id = "rampt_img_style";
+		document.head.appendChild(rampt_img_style);
+
+		rampt_img_style.innerHTML = '';
+	}
+
+	var rampt_imgs = document.querySelectorAll("rampt-img");
+
+	for(var rampt_img_index = 0; rampt_img_index < rampt_imgs.length; rampt_img_index++)
+	{
+		var rampt_img = rampt_imgs[rampt_img_index];
+		if(rampt_img.getAttribute("rampt_resized") != "true")
+		{
+			rampt_img.setAttribute("rampt_resized", "true");
+			rampt_img.classList.add("i-rampthtml-layout-size-defined");
+			rampt_img.classList.add("i-rampthtml-element");
+
+			var rampt_layout = rampt_img.getAttribute("layout");
+
+			if(rampt_layout == "responsive")
+			{
+				rampt_img.classList.add("i-rampthtml-layout-responsive");
+			}
+			else if(rampt_layout == "fixed")
+			{
+				rampt_img.classList.add("i-rampthtml-layout-fixed");
+				rampt_img.style.width = rampt_img.getAttribute("width") + "px";
+				rampt_img.style.height = rampt_img.getAttribute("height") + "px";
+			}
+
+			var rampt_img_src_width = parseInt(rampt_img.getAttribute("width"));
+			var rampt_img_src_height = parseInt(rampt_img.getAttribute("height"));
+
+			var rampt_size_ratio = (rampt_img_src_height / rampt_img_src_width) * 100;
+
+			var rampt_sizer = document.createElement("i-rampthtml-sizer");
+			rampt_sizer.style.paddingTop = rampt_size_ratio + "%"; 
+
+			rampt_img.appendChild(rampt_sizer);
+
+			if(window.IntersectionObserver)
+			{
+				rampt_observer.observe(rampt_img);
+			}
+			else
+			{
+				load_rampt_img(rampt_img);
+			}
+		}
+	}
+}
+
+/* load_rampt_img adds a loading animation and load the image in 
+   the rampt-img tag
+*/
+function load_rampt_img(rampt_container)
+{
+	if(rampt_container.querySelectorAll("img").length == 0)
+	{
+		rampt_container.classList.add("rampt-loading");
+		var rampt_img = document.createElement("img");
+		rampt_img.src = rampt_container.getAttribute("src");
+		rampt_img.alt = rampt_container.getAttribute("alt");
+
+		rampt_srcset = rampt_container.getAttribute("srcset");
+
+		var rampt_img_width = rampt_container.clientWidth;
+
+		if(rampt_srcset != null)
+		{
+			var rampt_sizes = rampt_srcset.split(",");
+
+			var rampt_smaller_size = 1000000;
+
+			for(rampt_size_index in rampt_sizes)
+			{
+				var rampt_size = rampt_sizes[rampt_size_index];
+
+				var rampt_size_reg = /\s[0-9]+w/;
+
+				if(rampt_size_reg.test(rampt_size))
+				{
+					var rampt_src_size = parseInt(rampt_size.match(rampt_size_reg)[0].replace("w", ""));
+
+					if(rampt_src_size > rampt_img_width && rampt_src_size < rampt_smaller_size)
+					{
+						rampt_smaller_size = rampt_src_size;
+
+						rampt_img.src = rampt_size.replace(rampt_size_reg, "").replace(/^\s+/, "").replace(/\s+$/, "");
+					}
+				} 
+			}
+
+			rampt_img.srcset = rampt_srcset;
+		}
+
+		rampt_img.classList.add("i-rampthtml-fill-content");
+		rampt_img.classList.add("i-rampthtml-replaced-content");
+
+		rampt_container.appendChild(rampt_img);
+
+	}
+}
+</script>
+<!-- add <script>setup_rampt_imgs();</script> before the closing </body> tag -->
