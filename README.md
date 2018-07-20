@@ -5,7 +5,7 @@ Script to lazy load images inspired by Google AMP technology
 Google AMP is great but it is too strict and it is difficult to implement on existing sites. RAMPT speeds up your load time but it is easier to implement.
 
 ## Installation
-Insert the content of rampt.min.html file in the head tag of your site and insert the following script above the closing body tag
+Insert the content of [rampt.min.html](https://github.com/Inflow/rampt/blob/master/rampt.min.html) file in the head tag of your site and insert the following script above the closing body tag
 
 ```html
 <script>
@@ -21,10 +21,10 @@ Insert the content of rampt.min.html file in the head tag of your site and inser
    - **responsive**: Resize images to fit their container, width and height attributes do not need to match the exact width and height, the script just need that values to calculate the aspect ratio
    
 ## Browser Support
-This script uses Intersection Observer API, which is available on [some browsers only] (https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API#Browser_compatibility) To use it on more browsers you can insert a [Intersection Observer polyfill] (https://github.com/w3c/IntersectionObserver) above the RAMPT script tag
+This script uses Intersection Observer API, which is available on [some browsers only](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API#Browser_compatibility) To use it on more browsers you can insert a [Intersection Observer polyfill](https://github.com/w3c/IntersectionObserver) above the RAMPT script tag
    
 ## Additional steps
-This script improves image loading but to optimize the site additional steps are necessary. Please visit our [blog post] (https://www.goinflow.com/amp-mobile-pagespeed-score/) for more information 
+This script improves image loading but to optimize the site additional steps are necessary. Please visit our [blog post](https://www.goinflow.com/amp-mobile-pagespeed-score/) for more information 
    
 ## License
-MIT © [Inflow] (https://www.goinflow.com)
+MIT © [Inflow](https://www.goinflow.com)
