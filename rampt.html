@@ -7,7 +7,7 @@ rampt-img{
 	overflow: hidden!important;
 }
 .i-rampthtml-layout-container, .i-rampthtml-layout-fixed-height, .i-rampthtml-layout-responsive, .i-rampthtml-layout-fixed{
-	display: block;
+	display: inline-block;
 	position: relative;
 }
 i-rampthtml-sizer {
@@ -35,6 +35,21 @@ i-rampthtml-sizer {
 </style>
 <script>
 /* RAMPT */
+function rampt_support_webp()
+{
+	var rampt_desktop_firefox_chrome_regex = /(Linux x86_64|Mac OS|Windows NT).*((Firefox\/(6[5-9]|[7-9][0-9]))|(Chrome\/[3-9][0-9]))/;
+	var rampt_microsoft_browsers_regex = /Windows NT.*(Edge\/(1[8-9]|[2-9][0-9]))/;
+	var rampt_android_chrome_regex = /Android.*Chrome\/[3-9][0-9].*Mobile Safari/;
+
+	if((rampt_desktop_firefox_chrome_regex.test(navigator.userAgent) || rampt_android_chrome_regex.test(navigator.userAgent)) && navigator.userAgent.indexOf("Edge") == -1 && navigator.userAgent.indexOf("Trident") == -1)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
 if(window.IntersectionObserver)
 {
 	var rampt_observer = new IntersectionObserver(function(entries) {
@@ -121,7 +136,16 @@ function load_rampt_img(rampt_container)
 	{
 		rampt_container.classList.add("rampt-loading");
 		var rampt_img = document.createElement("img");
-		rampt_img.src = rampt_container.getAttribute("src");
+
+		if(rampt_container.dataset.webpsrc && rampt_support_webp())
+		{
+			rampt_img.src = rampt_container.dataset.webpsrc;
+		}
+		else
+		{
+			rampt_img.src = rampt_container.getAttribute("src");
+		}
+
 		rampt_img.alt = rampt_container.getAttribute("alt");
 
 		rampt_srcset = rampt_container.getAttribute("srcset");
