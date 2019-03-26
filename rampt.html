@@ -148,7 +148,14 @@ function load_rampt_img(rampt_container)
 
 		rampt_img.alt = rampt_container.getAttribute("alt");
 
-		rampt_srcset = rampt_container.getAttribute("srcset");
+		if(rampt_container.dataset.webpsrcset && rampt_support_webp())
+		{
+			rampt_srcset = rampt_container.dataset.webpsrcset;
+		}
+		else
+		{
+			rampt_srcset = rampt_container.getAttribute("srcset");
+		}
 
 		var rampt_img_width = rampt_container.clientWidth;
 
