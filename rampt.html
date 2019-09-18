@@ -274,4 +274,52 @@ function rampt_fallback(this_rampt_img)
 	this_rampt_img.removeAttribute("onerror");
 }
 </script>
+<script>
+window.addEventListener("load", rampt_delay_load, false);
+setTimeout(rampt_delay_load, 4000);
+
+function rampt_delay_load()
+{
+	if(typeof(window.rampt_delayed_resources_loaded) == "undefined")
+	{
+		var rampt_delayed_resources = document.querySelectorAll("link[data-rampt-href]");
+
+		for(var rampt_delayed_resource_index = 0; rampt_delayed_resource_index < rampt_delayed_resources.length; rampt_delayed_resource_index++)
+		{
+			var rampt_delayed_resource = rampt_delayed_resources[rampt_delayed_resource_index];
+
+			rampt_delayed_resource.href = rampt_delayed_resource.getAttribute("data-rampt-href");
+		}
+
+		if(/(Android|iPhone|iPod)/.test(navigator.userAgent))
+		{
+			setTimeout(rampt_delayed_scripts, 4000);
+		}
+		else
+		{
+			rampt_delayed_scripts();
+		}
+
+		window.rampt_delayed_resources_loaded = "yes";
+	}
+}
+function rampt_delayed_scripts()
+{
+	var rampt_delayed_resources = document.querySelectorAll("script[data-rampt-delay-src], link[data-rampt-delay-href]");
+
+	for(var rampt_delayed_resource_index = 0; rampt_delayed_resource_index < rampt_delayed_resources.length; rampt_delayed_resource_index++)
+	{
+		var rampt_delayed_resource = rampt_delayed_resources[rampt_delayed_resource_index];
+
+		if(rampt_delayed_resource.tagName.toLowerCase() == "script")
+		{
+			rampt_delayed_resource.src = rampt_delayed_resource.getAttribute("data-rampt-delay-src");
+		}
+		else
+		{
+			rampt_delayed_resource.href = rampt_delayed_resource.getAttribute("data-rampt-delay-href");
+		}
+	}
+}
+</script>	
 <!-- add <script>setup_rampt_imgs();</script> before the closing </body> tag -->
