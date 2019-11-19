@@ -36,11 +36,12 @@ if(window.IntersectionObserver)
 */
 function setup_rampt_imgs()
 {
-	var rampt_imgs = document.querySelectorAll("rampt-img");
+	var rampt_imgs = document.querySelectorAll("rampt-img:not(.rampt_observed)");
 
 	for(var rampt_img_index = 0; rampt_img_index < rampt_imgs.length; rampt_img_index++)
 	{
 		var rampt_img = rampt_imgs[rampt_img_index];
+		rampt_img.classList.add("rampt_observed");
 		if(rampt_img.getAttribute("rampt_resized") != "true")
 		{
 			rampt_img.setAttribute("rampt_resized", "true");
@@ -88,11 +89,12 @@ function setup_rampt_imgs()
 		}
 	}
 
-	var rampt_imgs = document.querySelectorAll("img[data-rampt-src]");
+	var rampt_imgs = document.querySelectorAll("img[data-rampt-src]:not(.rampt_observed)");
 
 	for(var rampt_img_index = 0; rampt_img_index < rampt_imgs.length; rampt_img_index++)
 	{
 		var rampt_img = rampt_imgs[rampt_img_index];
+		rampt_img.classList.add("rampt_observed");
 		if(window.IntersectionObserver)
 		{
 			if(rampt_is_in_viewport(rampt_img))
@@ -134,7 +136,7 @@ function load_rampt_img(rampt_container)
 {
 	if(rampt_container.tagName.toLowerCase() == "img")
 	{
-		if(rampt_container.src == "")
+		if(rampt_container.src == "" || rampt_container.src.indexOf("data:image/png;base64,") === 0)
 		{
 			if(rampt_container.dataset.webpsrc && rampt_support_webp())
 			{
