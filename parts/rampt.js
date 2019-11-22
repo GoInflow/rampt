@@ -20,7 +20,7 @@ if(window.IntersectionObserver)
 			entries.forEach(function (entry) {
                     		if (entry.intersectionRatio > 0) {
                         		rampt_observer.unobserve(entry.target);
-					load_rampt_img(entry.target);
+					load_rampt_element(entry.target);
 				}
 			});
 		},
@@ -31,10 +31,10 @@ if(window.IntersectionObserver)
 		}
 	);
 }
-/* setup_rampt_imgs prepares all rampt-img tags and img tags with data-rampt-src attribute
+/* setup_rampt_elements prepares all rampt-img tags and img tags with data-rampt-src attribute
    It resizes them so they are ready to load the images
 */
-function setup_rampt_imgs()
+function setup_rampt_elements()
 {
 	var rampt_imgs = document.querySelectorAll("img[data-rampt-src]:not(.rampt_observed)");
 
@@ -46,7 +46,7 @@ function setup_rampt_imgs()
 		{
 			if(rampt_is_in_viewport(rampt_img))
 			{
-				load_rampt_img(rampt_img);
+				load_rampt_element(rampt_img);
 			}
 			else
 			{
@@ -55,7 +55,30 @@ function setup_rampt_imgs()
 		}
 		else
 		{
-			load_rampt_img(rampt_img);
+			load_rampt_element(rampt_img);
+		}
+	}
+
+	var rampt_iframes = document.querySelectorAll("iframe[data-rampt-src]:not(.rampt_observed)");
+
+	for(var rampt_iframe_index = 0; rampt_iframe_index < rampt_iframes.length; rampt_iframe_index++)
+	{
+		var rampt_iframe = rampt_iframes[rampt_iframe_index];
+		rampt_iframe.classList.add("rampt_observed");
+		if(window.IntersectionObserver)
+		{
+			if(rampt_is_in_viewport(rampt_iframe))
+			{
+				load_rampt_element(rampt_iframe);
+			}
+			else
+			{
+				rampt_observer.observe(rampt_iframe);
+			}
+		}
+		else
+		{
+			load_rampt_element(rampt_iframe);
 		}
 	}
 }
@@ -75,34 +98,41 @@ function rampt_is_in_viewport(rampt_element)
 	}
 }
 
-/* load_rampt_img adds a loading animation and load the image in 
+/* load_rampt_element adds a loading animation and load the image in 
    the rampt-img tag
 */
-function load_rampt_img(rampt_container)
+function load_rampt_element(rampt_container)
 {
-	if(rampt_container.src == "" || rampt_container.src.indexOf("data:image/png;base64,") === 0)
+	if(rampt_container.tagName.toLowerCase() == "iframe")
 	{
-		if(rampt_container.dataset.webpsrc && rampt_support_webp())
+		rampt_container.src = rampt_container.getAttribute("data-rampt-src");
+	}
+	else if(rampt_container.tagName.toLowerCase() == "src")
+	{
+		if(rampt_container.src == "" || rampt_container.src.indexOf("data:image/png;base64,") === 0)
 		{
-			rampt_container.src = rampt_container.dataset.webpsrc;
-			rampt_container.setAttribute("data-fallbacksrc", rampt_container.getAttribute("data-rampt-src"));
-		}
-		else
-		{
-			rampt_container.src = rampt_container.getAttribute("data-rampt-src");
-		}
+			if(rampt_container.dataset.webpsrc && rampt_support_webp())
+			{
+				rampt_container.src = rampt_container.dataset.webpsrc;
+				rampt_container.setAttribute("data-fallbacksrc", rampt_container.getAttribute("data-rampt-src"));
+			}
+			else
+			{
+				rampt_container.src = rampt_container.getAttribute("data-rampt-src");
+			}
 
-		if(rampt_container.dataset.webpsrcset && rampt_support_webp())
-		{
-			rampt_container.srcset = rampt_container.dataset.webpsrcset;
-			rampt_container.setAttribute("data-fallbacksrcset", rampt_container.dataset.webpsrcset);
-		}
-		else if(rampt_container.getAttribute("data-rampt-srcset"))
-		{
-			rampt_container.srcset = rampt_container.getAttribute("data-rampt-srcset");
-		}
+			if(rampt_container.dataset.webpsrcset && rampt_support_webp())
+			{
+				rampt_container.srcset = rampt_container.dataset.webpsrcset;
+				rampt_container.setAttribute("data-fallbacksrcset", rampt_container.dataset.webpsrcset);
+			}
+			else if(rampt_container.getAttribute("data-rampt-srcset"))
+			{
+				rampt_container.srcset = rampt_container.getAttribute("data-rampt-srcset");
+			}
 
-		rampt_img.setAttribute("onerror", "rampt_fallback(this);");
+			rampt_container.setAttribute("onerror", "rampt_fallback(this);");
+		}
 	}	
 }
 function rampt_fallback(this_rampt_img)
