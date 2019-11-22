@@ -107,7 +107,7 @@ function load_rampt_element(rampt_container)
 	{
 		rampt_container.src = rampt_container.getAttribute("data-rampt-src");
 	}
-	else if(rampt_container.tagName.toLowerCase() == "src")
+	else if(rampt_container.tagName.toLowerCase() == "img")
 	{
 		if(rampt_container.src == "" || rampt_container.src.indexOf("data:image/png;base64,") === 0)
 		{
