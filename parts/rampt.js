@@ -109,7 +109,7 @@ function load_rampt_element(rampt_container)
 	}
 	else if(rampt_container.tagName.toLowerCase() == "img")
 	{
-		if(rampt_container.src == "" || rampt_container.src.indexOf("data:image/png;base64,") === 0)
+		if(rampt_container.src == "" || rampt_container.src.indexOf("data:image/gif;base64,") === 0)
 		{
 			if(rampt_container.dataset.webpsrc && rampt_support_webp())
 			{

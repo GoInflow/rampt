@@ -149,7 +149,7 @@ function load_rampt_element(rampt_container)
 	}
 	else if(rampt_container.tagName.toLowerCase() == "img")
 	{
-		if(rampt_container.src == "" || rampt_container.src.indexOf("data:image/png;base64,") === 0)
+		if(rampt_container.src == "" || rampt_container.src.indexOf("data:image/gif;base64,") === 0)
 		{
 			if(rampt_container.dataset.webpsrc && rampt_support_webp())
 			{
@@ -194,13 +194,42 @@ function rampt_fallback(this_rampt_img)
 </script>
 <script>
 /*--include:parts/rampt_delay.js:--*/
+/*
+Delay the loading of stylesheets and script tags.
+
+If the script is required as soon as the page is loaded use the async attribute
+Example:
+
+<script src="file.js" async></script>
+
+If the stylesheet is required as soon as the page is loaded rename the href attribute to data-rampt-href
+Example:
+
+<link data-rampt-href="file.css" rel="stylesheet"></link>
+
+If the script is not required as soon as the page is loaded rename the src attribute to data-rampt-delay-src
+Example:
+
+<script data-rampt-delay-src="file.js" async></script>
+
+If the stylesheet is not required as soon as the page is loaded rename the href attribute to data-rampt-delay-href
+Example:
+
+<link data-rampt-delay-href="file.css" rel="stylesheet"></link>
+*/
+
+// execute rampt_delay_load on window onload event
 window.addEventListener("load", rampt_delay_load, false);
+
+// in case that onload event doesn't trigger sooner, wait 4 seconds to execute rampt_delay_load
 setTimeout(rampt_delay_load, 4000);
 
 function rampt_delay_load()
 {
+	// window.rampt_delayed_resources_loaded flag checks if the function has been executed so that it doesn't apply changes twice
 	if(typeof(window.rampt_delayed_resources_loaded) == "undefined")
 	{
+		// search all <link> tags that have the data-rampt-href attribute and set the href attribute
 		var rampt_delayed_resources = document.querySelectorAll("link[data-rampt-href]");
 
 		for(var rampt_delayed_resource_index = 0; rampt_delayed_resource_index < rampt_delayed_resources.length; rampt_delayed_resource_index++)
@@ -210,6 +239,7 @@ function rampt_delay_load()
 			rampt_delayed_resource.href = rampt_delayed_resource.getAttribute("data-rampt-href");
 		}
 
+		// checks if device is iPhone, iPod or android to delay the execution of rampt_delayed_scripts 4 seconds
 		if(/(Android|iPhone|iPod)/.test(navigator.userAgent))
 		{
 			setTimeout(rampt_delayed_scripts, 4000);
@@ -219,11 +249,13 @@ function rampt_delay_load()
 			rampt_delayed_scripts();
 		}
 
+		// sets window.rampt_delayed_resources_loaded flag to prevent that we apply changes again
 		window.rampt_delayed_resources_loaded = "yes";
 	}
 }
 function rampt_delayed_scripts()
 {
+	// search all <link> and <script> tags that have the data-rampt-delay-href or data-rampt-delay-src attribute and set the href or src attributes
 	var rampt_delayed_resources = document.querySelectorAll("script[data-rampt-delay-src], link[data-rampt-delay-href]");
 
 	for(var rampt_delayed_resource_index = 0; rampt_delayed_resource_index < rampt_delayed_resources.length; rampt_delayed_resource_index++)
@@ -241,5 +273,6 @@ function rampt_delayed_scripts()
 	}
 }
 /*--includeend--*/
+/* use rampt for all images in a file :%s/<img.*\ssrc=/\0"data:image\/gif;base64,R0lGODlhAQABAIAAAP\/\/\/wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" data-rampt-src=/g */
 </script>	
 <!-- add <script>setup_rampt_elements();</script> before the closing </body> tag -->
