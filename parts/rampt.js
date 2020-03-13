@@ -31,7 +31,7 @@ if(window.IntersectionObserver)
 		}
 	);
 }
-/* setup_rampt_elements prepares all rampt-img tags and img tags with data-rampt-src attribute
+/* setup_rampt_elements prepares all tags with data-rampt-src attribute
    It resizes them so they are ready to load the images
 */
 function setup_rampt_elements()
@@ -81,6 +81,35 @@ function setup_rampt_elements()
 			load_rampt_element(rampt_iframe);
 		}
 	}
+
+	var rampt_videos = document.querySelectorAll("video[data-rampt-src]:not(.rampt_observed), video:not(.rampt_observed) > source[data-rampt-src]");
+
+	for(var rampt_video_index = 0; rampt_video_index < rampt_videos.length; rampt_video_index++)
+	{
+		var rampt_video = rampt_videos[rampt_video_index];
+
+		if(rampt_video.tagName.toLowerCase() == "source")
+		{
+			rampt_video = rampt_videos[rampt_video_index].parentNode;
+		}
+
+		rampt_video.classList.add("rampt_observed");
+		if(window.IntersectionObserver)
+		{
+			if(rampt_is_in_viewport(rampt_video))
+			{
+				load_rampt_element(rampt_video);
+			}
+			else
+			{
+				rampt_observer.observe(rampt_video);
+			}
+		}
+		else
+		{
+			load_rampt_element(rampt_video);
+		}
+	}
 }
 /* checks is an element is visible and inside the viewport 
 */
@@ -106,6 +135,10 @@ function load_rampt_element(rampt_container)
 	if(rampt_container.tagName.toLowerCase() == "iframe")
 	{
 		rampt_container.src = rampt_container.getAttribute("data-rampt-src");
+	}
+	else if(rampt_container.tagName.toLowerCase() == "video")
+	{
+		rampt_container.outerHTML = rampt_container.outerHTML.replace(/data-rampt-src=/g, 'src=');
 	}
 	else if(rampt_container.tagName.toLowerCase() == "img")
 	{
@@ -149,4 +182,3 @@ function rampt_fallback(this_rampt_img)
 
 	this_rampt_img.removeAttribute("onerror");
 }
-
